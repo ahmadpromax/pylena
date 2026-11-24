@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>آکادمی پایتون النا | آموزش تعاملی Python با روایت داستانی</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- نوار بالای صفحه (Header) -->
+  <header class="top-bar">
+    <div class="brand-area">
+      <div class="brand-badge">🐍</div>
+      <div>
+        <h1 class="brand-title">آکادمی پایتون النا</h1>
+        <span class="brand-subtitle" id="chapter-location-label">فصل ۱ • اقامتگاه اشرافی و سواحل مدیترانه</span>
+      </div>
+    </div>
+
+    <div class="status-cluster">
+      <!-- نشانگر وضعیت شارژ و تایمر ۶۰ ثانیه‌ای -->
+      <div class="charge-pill withered" id="charge-pill">
+        <span class="charge-dot" id="charge-dot"></span>
+        <span id="charge-status-text">وضعیت: نیازمند شارژ</span>
+        <span class="charge-timer" id="charge-timer" hidden>۶۰ ثانیه</span>
+      </div>
+
+      <!-- پیشرفت کل -->
+      <div class="progress-pill">
+        <span>پیشرفت:</span>
+        <strong id="overall-progress-text">۰ از ۸۰ درس</strong>
+      </div>
+
+      <!-- دکمه بررسی گواهینامه‌های بین‌المللی -->
+      <button class="btn-outline" id="btn-exam-roadmap" title="نقشه آزمون‌های PCEP و PCAP">
+        🏆 نقشه آزمون‌ها
+      </button>
+    </div>
+  </header>
+
+  <!-- فضای اصلی بازی -->
+  <main class="workspace">
+    <!-- ستون راست: نمایشگر کاراکتر النا و کمد لباس انباشته -->
+    <section class="panel character-panel">
+      <div class="panel-header">
+        <span class="lesson-badge" id="lesson-number-badge">درس ۱ از ۸۰</span>
+        <span class="exam-tag" id="lesson-exam-tag">PCEP™ • بخش اول</span>
+      </div>
+
+      <div class="character-stage" id="character-stage">
+        <div class="stage-backdrop-glow" id="stage-glow"></div>
+        <img id="elena-main-img" src="" alt="النا" class="elena-portrait" />
+        <div class="state-ribbon withered" id="state-ribbon">حالت عادی / پیش از شارژ</div>
+        <button class="btn-spotlight-reopen" id="btn-reopen-spotlight" hidden>
+          ✨ مشاهده مقایسه قبل و بعد
+        </button>
+      </div>
+
+      <!-- کمد لباس و دستاوردهای آزاد شده انباشته -->
+      <div class="wardrobe-box">
+        <div class="wardrobe-header">
+          <span>👗 کمد لباس و دارایی‌های آزادشده النا</span>
+          <span class="wardrobe-count" id="wardrobe-count">۰ آیتم</span>
+        </div>
+        <div class="wardrobe-items" id="wardrobe-items">
+          <span class="wardrobe-empty">هنوز آیتمی آزاد نشده است؛ با حل اولین درس، تحول النا آغاز می‌شود.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ستون میانی: روایت داستانی و گفتگوی زنده النا و کمیل -->
+    <section class="panel narrative-panel">
+      <div class="panel-header">
+        <h2 class="lesson-title" id="lesson-title">در حال بارگذاری درس...</h2>
+      </div>
+
+      <div class="dialogue-feed" id="dialogue-feed"></div>
+
+      <!-- باکس توضیح آموزشی کوتاه و نکته‌ی کلیدی -->
+      <div class="concept-card" id="concept-card">
+        <div class="concept-title">📘 نکته کلیدی این درس</div>
+        <div class="concept-body" id="concept-body"></div>
+      </div>
+
+      <!-- مأموریت کدنویسی -->
+      <div class="mission-card">
+        <div class="mission-header">
+          <span>🎯 مأموریت کدنویسی</span>
+          <span class="mission-status" id="mission-status">در انتظار اجرای کد</span>
+        </div>
+        <p class="mission-text" id="mission-text"></p>
+      </div>
+    </section>
+
+    <!-- ستون چپ: ویرایشگر کد Python + کنسول خروجی + چالش ریاضی فشرده -->
+    <section class="panel code-panel">
+      <div class="editor-toolbar">
+        <div class="editor-tabs">
+          <span class="tab-active">main.py</span>
+          <span class="pyodide-status" id="pyodide-status">⏳ در حال آماده‌سازی موتور Python...</span>
+        </div>
+        <div class="editor-actions">
+          <button class="btn-secondary" id="btn-reset-code" title="بازگردانی کد اولیه">↺ بازنشانی</button>
+          <button class="btn-primary" id="btn-run-code" disabled>▶ اجرای کد و شارژ النا</button>
+        </div>
+      </div>
+
+      <div class="editor-wrapper">
+        <textarea id="code-editor" spellcheck="false" dir="ltr" placeholder="# کد Python خود را اینجا بنویسید..."></textarea>
+      </div>
+
+      <!-- بخش پایینی ستون کد: کنسول خروجی و باکس چالش ریاضی هم‌اندازه در کنار هم -->
+      <div class="console-and-math-row">
+        <!-- کنسول خروجی Python -->
+        <div class="console-box" id="console-box">
+          <div class="box-header">
+            <span>💻 کنسول خروجی Python</span>
+            <button class="btn-tiny" id="btn-clear-console">پاک کردن</button>
+          </div>
+          <pre class="console-output" id="console-output" dir="ltr">آماده اجرای کد...</pre>
+        </div>
+
+        <!-- باکس چالش ریاضی فشرده و هم‌اندازه کنار کنسول -->
+        <div class="math-box" id="math-box">
+          <div class="box-header">
+            <span>🧮 چالش ریاضی (راهنما)</span>
+            <span class="attempts-badge" id="math-attempts-badge">تلاش باقی‌مانده: ۲</span>
+          </div>
+          <div class="math-body" id="math-body">
+            <div class="math-equation" id="math-equation" dir="ltr">12 × 4 + 7 = ?</div>
+            <div class="math-input-row">
+              <input type="text" id="math-answer-input" placeholder="پاسخ عددی..." inputmode="numeric" />
+              <button class="btn-accent" id="btn-submit-math">بررسی</button>
+            </div>
+            <div class="math-feedback" id="math-feedback"></div>
+          </div>
+          <div class="hint-revealed" id="hint-revealed" hidden></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- نوار ناوبری پایین صفحه (۸۰ درس با قفل مراحل بعدی) -->
+  <footer class="lesson-nav-bar">
+    <button class="nav-arrow" id="btn-prev-lesson" title="درس قبلی">▶</button>
+    <div class="chapter-filter-tabs" id="chapter-tabs">
+      <button class="ch-tab active" data-chapter="1">فصل ۱ (۱-۲۰)</button>
+      <button class="ch-tab" data-chapter="2">فصل ۲ (۲۱-۴۰)</button>
+      <button class="ch-tab" data-chapter="3">فصل ۳ (۴۱-۶۰)</button>
+      <button class="ch-tab" data-chapter="4">فصل ۴ (۶۱-۸۰)</button>
+    </div>
+    <div class="lesson-pills-strip" id="lesson-pills-strip"></div>
+    <button class="nav-arrow" id="btn-next-lesson" title="درس بعدی">◀</button>
+  </footer>
+
+  <!-- مودال نمای متمرکز تحول و اسلایدر مقایسه (Spotlight Showcase & Before/After Slider) -->
+  <div class="spotlight-overlay" id="spotlight-overlay" hidden>
+    <div class="spotlight-modal">
+      <button class="spotlight-close" id="btn-close-spotlight" title="بستن (×)">✕</button>
+
+      <div class="spotlight-content">
+        <!-- بخش تصویر و اسلایدر مقایسه -->
+        <div class="comparison-wrapper">
+          <div class="comparison-container" id="comparison-container">
+            <!-- تصویر بعد از شارژ (پس‌زمینه) -->
+            <img id="spotlight-after-img" src="" alt="النا پس از شارژ" class="comp-img comp-after" />
+            <!-- تصویر قبل از شارژ (لایه رویی با برش عرضی) -->
+            <div class="comp-before-clip" id="comp-before-clip">
+              <img id="spotlight-before-img" src="" alt="النا قبل از شارژ" class="comp-img comp-before" />
+            </div>
+            <!-- خط و دستگیره اسلایدر -->
+            <div class="comp-slider-line" id="comp-slider-line">
+              <div class="comp-slider-handle">⇄</div>
+            </div>
+            <span class="comp-label label-before">قبل از شارژ</span>
+            <span class="comp-label label-after">پس از شارژ ✨</span>
+          </div>
+          <p class="slider-instruction" id="slider-instruction">
+            در حال نمایش تحول نرم... سپس دستگیره اسلایدر را به چپ و راست بکشید
+          </p>
+        </div>
+
+        <!-- بخش نجوای عاشقانه و اغواگر النا + تایمر ۶۰ ثانیه‌ای + دکمه درس بعدی -->
+        <div class="spotlight-details">
+          <div class="spotlight-badge-row">
+            <span class="spotlight-charged-tag">⚡ النا شارژ شد!</span>
+            <span class="spotlight-timer-pill" id="spotlight-timer-text">طراوت باقی‌مانده: ۶۰ ثانیه</span>
+          </div>
+
+          <h3 class="spotlight-lesson-heading" id="spotlight-lesson-heading"></h3>
+
+          <div class="unlocked-item-banner" id="unlocked-item-banner"></div>
+
+          <blockquote class="whisper-box">
+            <div class="whisper-author">💋 نجوای النا:</div>
+            <p class="whisper-text" id="spotlight-whisper-text"></p>
+          </blockquote>
+
+          <!-- باکس آزمون پایان فصل (فقط در دروس ۲۰، ۴۰، ۶۰، ۸۰ فعال می‌شود) -->
+          <div class="exam-gate-box" id="exam-gate-box" hidden>
+            <div class="exam-gate-title" id="exam-gate-title"></div>
+            <p class="exam-gate-desc" id="exam-gate-desc"></p>
+            <a id="exam-official-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-exam-link">
+              ورود به صفحه ثبت‌نام آزمون رسمی بین‌المللی ↗
+            </a>
+          </div>
+
+          <div class="spotlight-actions">
+            <button class="btn-primary btn-large" id="btn-spotlight-next-lesson">
+              ورود به درس بعدی ◀
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال نقشه آزمون‌های بین‌المللی PCEP و PCAP -->
+  <div class="spotlight-overlay" id="roadmap-overlay" hidden>
+    <div class="roadmap-modal">
+      <button class="spotlight-close" id="btn-close-roadmap">✕</button>
+      <h2>🏆 نقشه پیشرفت ۸۰ درسی و انطباق با آزمون‌های بین‌المللی</h2>
+      <p class="roadmap-intro">
+        با اتمام هر فصل ۲۰ درسی، آمادگی کامل برای بخش مربوطه در آزمون‌های رسمی <strong>Python Institute (PCEP™ &amp; PCAP™)</strong> را کسب می‌کنید.
+      </p>
+      <div class="roadmap-grid">
+        <div class="roadmap-card">
+          <div class="rm-header">فصل ۱ (دروس ۱ تا ۲۰) • مدیترانه</div>
+          <p>متغیرها، انواع داده، عملگرها، رشته‌ها (f-strings)، منطق بولین و شرط‌ها (if/elif/else)</p>
+          <span class="rm-badge">پوشش بخش اول PCEP™ • پیراهن شب ابریشمی زرشکی</span>
+        </div>
+        <div class="roadmap-card">
+          <div class="rm-header">فصل ۲ (دروس ۲۱ تا ۴۰) • پاریس، فرانسه</div>
+          <p>حلقه‌های for و while، لیست‌ها، Slicing، تاپل‌ها، دیکشنری‌ها و مجموعه‌ها (Sets)</p>
+          <a href="https://pythoninstitute.org/pcep" target="_blank" rel="noopener noreferrer" class="rm-link">لینک رسمی آزمون PCEP™ ↗</a>
+        </div>
+        <div class="roadmap-card">
+          <div class="rm-header">فصل ۳ (دروس ۴۱ تا ۶۰) • میلان و دریاچه کومو</div>
+          <p>توابع (def)، حوزه متغیرها (Scope)، ماژول‌ها، مدیریت فایل و استثناها (try/except)</p>
+          <span class="rm-badge">پوشش بخش اول PCAP™ • لباس مخمل و الماس ایتالیایی</span>
+        </div>
+        <div class="roadmap-card">
+          <div class="rm-header">فصل ۴ (دروس ۶۱ تا ۸۰) • توکیو و کیوتو، ژاپن</div>
+          <p>برنامه‌نویسی شی‌گرا (OOP)، کلاس‌ها، <code>__init__</code>، ارث‌بری، چندریختی و Comprehensions</p>
+          <a href="https://pythoninstitute.org/pcap" target="_blank" rel="noopener noreferrer" class="rm-link">لینک رسمی آزمون PCAP™ ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="courses/python/lessons.js"></script>
+  <script src="js/assets-fallback.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
