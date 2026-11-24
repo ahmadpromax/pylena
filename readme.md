@@ -55,6 +55,6 @@
 1. فایل‌های پروژه را در مخزن گیتهاب قرار دهید [cite: 12].
 2. وارد بخش **Settings** مخزن شوید و از منوی سمت چپ روی **Pages** کلیک کنید [cite: 12].
 3. در بخش **Branch** شاخه `main` و پوشه `/ (root)` را انتخاب و ذخیره کنید [cite: 12].
-4. پس از کوتاه‌زمانی، وب‌سایت روی آدرس [https://ahmadpromax.github.io/pylena/](https://ahmadpromax.github.io/pylena/) فعال می‌شود [cite: 12].
+4. پس از کوتاه‌زمانی، وب‌سایت روی آدرس [https://ahmadpromax.github.io/pylena/](https://userid.github.io/yourword/) فعال می‌شود [cite: 12].
 
 </div>
